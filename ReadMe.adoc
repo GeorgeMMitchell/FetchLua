@@ -39,8 +39,8 @@ _FetchContent_Declare_ and _FetchContent_MakeAvailable_.
 
 A typical use-case might look like:
 
-[source,cmake]
-====
+[source]
+----
 # Use Lua version 5.4.5 +
 set(FetchLua_LUA_VERSION 5.4.5)
 
@@ -53,7 +53,7 @@ FetchLua_MakeAvailable()
 add_executable(exe main.cpp src1.cpp src2.cpp)
 
 target_link_libraries(exe PRIVATE FetchLua::Lua)
-====
+----
 
 FetchLua_Declare::
 Wrapper that calls _FetchContent_Declare_ declaring Lua content for the given
