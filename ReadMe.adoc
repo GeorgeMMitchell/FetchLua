@@ -41,7 +41,7 @@ A typical use-case might look like:
 
 [source]
 ----
-# Use Lua version 5.4.5 +
+# Use Lua version 5.4.5
 set(FetchLua_LUA_VERSION 5.4.5)
 
 include(cmake/FetchLua.cmake)
