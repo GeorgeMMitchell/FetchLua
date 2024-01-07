@@ -1,0 +1,121 @@
+// Copyright (c) 2024 George Mitchell
+// See License.txt for details
+
+:toc:
+
+ifdef::env-github[]
+:toc-placement!:
+:warning-caption: :warning:
+:note-caption: :information_source:
+endif::[]
+
+= The FetchLua CMake Module
+
+FetchLua provides a convenient interface for the Lua project. It acts both as
+a FetchContent wrapper for obtaining Lua and as a way to configure certain Lua
+build properties. FetchLua provides the `FetchLua::Lua` library target along
+with optional execution targets `FetchLua::LuaInterpreter` and
+`FetchLua::LuaCompiler`. The executable targets are disabled by default.
+
+toc::[]
+
+== License
+FetchLua is provided under the 0-clause BSD license and is not associated
+with the Lua Project. See License.txt or the top of FetchLua.cmake for
+details.
+
+== Requirements
+FetchLua requires at least CMake version 3.14.
+
+== Usage
+Users can either copy the `FetchLua.cmake` file and include the module
+manually or clone this repository and call `add_subdirectory(FetchLua)` which
+will provide cache variables corresponding to FetchLua's variables and run
+FetchLua automatically.
+
+FetchLua uses only two public functions and provides a number of variables to
+control them. The two functions mirror the FetchContent calls
+_FetchContent_Declare_ and _FetchContent_MakeAvailable_.
+
+A typical use-case might look like:
+
+[source,cmake]
+====
+# Use Lua version 5.4.5 +
+set(FetchLua_LUA_VERSION 5.4.5)
+
+include(cmake/FetchLua.cmake)
+
+FetchLua_Declare()
+
+FetchLua_MakeAvailable()
+
+add_executable(exe main.cpp src1.cpp src2.cpp)
+
+target_link_libraries(exe PRIVATE FetchLua::Lua)
+====
+
+FetchLua_Declare::
+Wrapper that calls _FetchContent_Declare_ declaring Lua content for the given
+CMake project. FetchLua pulls its Lua source code from the
+https://www.lua.org/ftp/[official Lua FTP server]. FetchLua_Declare()
+uses `FetchLua_LUA_VERSION` to determine which version to download.
+
+FetchLua_MakeAvailable::
+Calls _FetchContent_MakeAvailable_ for the previously declared Lua content and
+performs a number of configuration steps before exporting the library build
+target (`FetchLua::Lua`) along with the optional executable targets.
+
+== Variables
+The following variables change FetchLua's behavior in various ways. Set these
+variables before including the FetchLua module.
+
+FetchLua_LUA_VERSION::
+Default Value:::
+`5.4.6`
+Description:::
+Lua version to use.
++
+[WARNING]
+====
+FetchLua does not check the version before attempting to download and
+configure Lua. It's on you to know if the Lua version you're wanting is
+available on Lua's FTP server.
+====
+
+FetchLua_LUA_PROJECT_DIR::
+Default Value:::
+`${PROJECT_BINARY_DIRECTORY}/FetchLua`
+Description:::
+Root directory created by FetchLua to configure Lua from. FetchLua copies all
+Lua source files from the FetchContent Lua source directory into this
+directory and executes modifications to accomodate FetchLua's custom include
+prefix.
+
+FetchLua_LUA_INCLUDE_DIR_NAME::
+Default Value:::
+`lua`
+Description:::
+Name of the directory prefix for including Lua headers
+(`#include <${FetchLua_LUA_INCLUDE_DIR_NAME}/lua.h>`). FetchLua modifies all
+Lua source files to accomodate the include prefix.
+
+FetchLua_LUA_LIBRARY_DEBUG_SUFFIX::
+Default Value:::
+`d`
+Description:::
+Filename suffix appended to Lua's library filename when performing a `Debug`
+or `RelWithDebInfo` build.
+
+FetchLua_BUILD_INTERPRETER::
+Default Value:::
+`OFF`
+Description:::
+Enables compilation of Lua's interpreter.
+
+FetchLua_BUILD_COMPILER::
+Default Value:::
+`OFF`
+Description:::
+Enables compilation of Lua's compiler. As of Lua version 5.4.6, this target is
+only supported when building Lua as a static library.
